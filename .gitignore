@@ -1,0 +1,23 @@
+# Environment
+.DS_Store
+.idea
+/.env
+/.env.*
+!/.env.dist
+!/.env.test
+/.php_cs.cache
+
+# Symfony
+/public/bundles/
+/public/uploads/*
+!/public/uploads/.gitkeep
+/var/
+/vendor/
+
+# Kubernetes
+/k8s/**/*secrets*.yaml
+/config/secrets/prod/prod.decrypt.private.php
+/.php-cs-fixer.cache
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

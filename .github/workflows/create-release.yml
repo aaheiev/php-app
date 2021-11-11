@@ -1,0 +1,47 @@
+name: Create release
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    env:
+      CONTAINER_REGISTRY: ghcr.io
+      APP_IMAGE_REPO: aaheiev/php-app/php
+      NGINX_IMAGE_REPO: aaheiev/php-app/nginx
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check and set version
+        run: |
+          VERSION="0.0.${{ github.run_number }}"
+          echo "VERSION=$(echo $VERSION)" >> $GITHUB_ENV
+
+      - name: Log in to the Container registry
+        id: docker_login
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+#      - name: Build docker image
+#        id: docker_build
+#        run:  |
+#          docker build -t ${{ env.IMAGE_REPO }}:${{ env.VERSION }} .
+#
+#      - name: Push docker image
+#        id: docker_push
+#        run:  |
+#          docker push ${{ env.IMAGE_REPO }}:${{ env.VERSION }}
+#
+#      - name: Package helm chart
+#        id:   helm_package
+#        run: |
+#          helm_package_output=$(helm package charts/product-station --app-version ${{ env.VERSION }} --version ${{ env.VERSION }})
+#          helm_artifact=$(basename -- $(echo $helm_package_output | awk '{ print $NF}'))
+#          echo $helm_artifact
+#          echo "::set-output name=helm_artifact::$(echo $helm_artifact)"
