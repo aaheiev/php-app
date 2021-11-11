@@ -1,6 +1,7 @@
+---
 apiVersion:  v2
 name:        php-app
 description: Helm chart to deploy php-app to Kubernetes
 type:        application
 version:     0.1.1
-appVersion:  "0.0.0.10"
+appVersion:  "0.0.1.13"
