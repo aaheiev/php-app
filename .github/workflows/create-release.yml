@@ -17,7 +17,7 @@ jobs:
 
       - name: Check and set version
         run: |
-          VERSION="0.0.${{ github.run_number }}"
+          VERSION="0.0.0.${{ github.run_number }}"
           echo "VERSION=$(echo $VERSION)" >> $GITHUB_ENV
 
       - name: Log in to the Container registry
@@ -27,6 +27,16 @@ jobs:
           registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build php-fpm image
+        run:  |
+          echo ${CONTAINER_REGISTRY}/${APP_IMAGE_REPO}:$VERSION
+          docker build --target php-fpm -t ${CONTAINER_REGISTRY}/${APP_IMAGE_REPO}:$VERSION .
+
+#      - name: Build nginx image
+#        run:  |
+#          echo ${CONTAINER_REGISTRY}/-nginx:$VERSION
+#          docker build -t ${CONTAINER_REGISTRY}-nginx:$VERSION .
 
 #      - name: Build docker image
 #        id: docker_build
