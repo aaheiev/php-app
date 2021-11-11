@@ -1,0 +1,40 @@
+name: Build base image
+on:
+  push:
+    paths:
+      - docker/base/*
+    branches:
+      - develop
+      - main
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    env:
+      CONTAINER_REGISTRY: ghcr.io
+      IMAGE_REPO: aaheiev/base/php-fpm-alpine
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check and set version
+        run: |
+          VERSION="${{ github.run_number }}"
+          echo "VERSION=$(echo $VERSION)" >> $GITHUB_ENV
+
+      - name: Log in to the Container registry
+        id: docker_login
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build base image
+        run:  |
+          echo ${CONTAINER_REGISTRY}/${IMAGE_REPO}:$VERSION
+          docker build -t ${CONTAINER_REGISTRY}/${IMAGE_REPO}:$VERSION .
+
+      - name: Push php-fpm image
+        run:  |
+          docker push ${CONTAINER_REGISTRY}/${IMAGE_REPO}:$VERSION
+          docker tag ${CONTAINER_REGISTRY}/${IMAGE_REPO}:$VERSION ${CONTAINER_REGISTRY}/${IMAGE_REPO}:latest
+          docker push ${CONTAINER_REGISTRY}/${IMAGE_REPO}:latest

@@ -38,16 +38,14 @@ jobs:
           echo ${CONTAINER_REGISTRY}/${NGINX_IMAGE_REPO}:$VERSION
           docker build -t ${CONTAINER_REGISTRY}/${NGINX_IMAGE_REPO}:$VERSION .
 
-#      - name: Build docker image
-#        id: docker_build
-#        run:  |
-#          docker build -t ${{ env.IMAGE_REPO }}:${{ env.VERSION }} .
-#
-#      - name: Push docker image
-#        id: docker_push
-#        run:  |
-#          docker push ${{ env.IMAGE_REPO }}:${{ env.VERSION }}
-#
+      - name: Push php-fpm image
+        run:  |
+          docker push ${CONTAINER_REGISTRY}/${APP_IMAGE_REPO}:$VERSION
+
+      - name: Push nginx image
+        run:  |
+          docker push ${CONTAINER_REGISTRY}/${NGINX_IMAGE_REPO}:$VERSION
+
 #      - name: Package helm chart
 #        id:   helm_package
 #        run: |
