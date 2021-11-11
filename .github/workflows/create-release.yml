@@ -33,10 +33,10 @@ jobs:
           echo ${CONTAINER_REGISTRY}/${APP_IMAGE_REPO}:$VERSION
           docker build --target php-fpm -t ${CONTAINER_REGISTRY}/${APP_IMAGE_REPO}:$VERSION .
 
-#      - name: Build nginx image
-#        run:  |
-#          echo ${CONTAINER_REGISTRY}/-nginx:$VERSION
-#          docker build -t ${CONTAINER_REGISTRY}-nginx:$VERSION .
+      - name: Build nginx image
+        run:  |
+          echo ${CONTAINER_REGISTRY}/${NGINX_IMAGE_REPO}:$VERSION
+          docker build -t ${CONTAINER_REGISTRY}/${NGINX_IMAGE_REPO}:$VERSION .
 
 #      - name: Build docker image
 #        id: docker_build
