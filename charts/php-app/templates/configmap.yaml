@@ -1,0 +1,15 @@
+{{- $fullName    := include "php-app.fullname" . -}}
+{{- $configName  := default $fullName .Values.configName -}}
+{{- if .Values.config -}}
+---
+apiVersion:                       v1
+kind:                             ConfigMap
+metadata:
+  name:                           {{ $configName }}
+  labels:
+{{ include "php-app.labels" . | indent 4 }}
+data:
+{{- range $name, $value := .Values.config }}
+  {{ $name }}: {{ $value | quote }}
+{{- end }}
+{{- end }}

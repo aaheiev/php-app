@@ -1,0 +1,87 @@
+{{- $fullName    := include "php-app.fullname" . -}}
+{{- $configName  := default $fullName .Values.configName -}}
+{{- $secretName  := default $fullName .Values.secretName -}}
+---
+apiVersion:                      apps/v1
+kind:                            Deployment
+metadata:
+  name: {{ include "php-app.fullname" . }}
+  labels:
+    {{- include "php-app.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas:                      {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "php-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "php-app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name:                  php-fpm
+          image:                 {{ .Values.image.phpRepository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy:       {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name:            {{ $configName }}
+            - secretRef:
+                name:            {{ $secretName }}
+          ports:
+            - name:              php-fpm
+              containerPort:     {{ .Values.service.phpPort }}
+              protocol:          TCP
+          readinessProbe:
+            exec:
+              command:
+                - /usr/local/bin/docker-healthcheck
+            initialDelaySeconds: 3
+            timeoutSeconds:      5
+            failureThreshold:    5
+            periodSeconds:       30
+            successThreshold:    1
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/docker-healthcheck
+            initialDelaySeconds: 5
+            timeoutSeconds:      5
+            failureThreshold:    10
+            periodSeconds:       30
+            successThreshold:    1
+          resources:
+        {{- toYaml .Values.phpResources | nindent 12 }}
+        - name:                  nginx
+          image:                 {{ .Values.image.nginxRepository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy:       {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name:            {{ $configName }}
+            - secretRef:
+                name:            {{ $secretName }}
+          ports:
+            - name:              http
+              containerPort:     {{ .Values.service.httpPort }}
+              protocol:          TCP
+          readinessProbe:
+            httpGet:
+              path:              /
+              port:              http
+            initialDelaySeconds: 3
+            timeoutSeconds:      5
+            failureThreshold:    10
+            periodSeconds:       30
+            successThreshold:    1
+          livenessProbe:
+            httpGet:
+              path:              /
+              port:              http
+            initialDelaySeconds: 5
+            timeoutSeconds:      5
+            failureThreshold:    3
+            periodSeconds:       30
+            successThreshold:    1
+          resources:
+            {{- toYaml .Values.nginxResources | nindent 12 }}
