@@ -10,4 +10,5 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ] || { [ "$1" = 'php' ] && [ "
   echo "starting php app"
 fi
 
-exec docker-php-entrypoint "$@"
+exec /usr/local/bin/docker-php-entrypoint "$@"
+#exec docker-php-entrypoint "$@"
