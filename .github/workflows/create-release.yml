@@ -4,7 +4,8 @@ on:
     branches:
       - develop
       - main
-
+    paths-ignore:
+      - docker/base/**
 jobs:
   create-release:
     runs-on: ubuntu-latest
