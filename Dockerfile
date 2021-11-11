@@ -90,4 +90,4 @@ COPY docker/nginx/conf/app.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /app
 
-COPY --from=kumulos_data_station_backend /app /app/
+COPY --from=php-fpm /app /app/
